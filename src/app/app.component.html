@@ -1,0 +1,70 @@
+<main class="bg-emerald-800 p-4 h-auto lg:h-screen">
+  <h1 class="text-2xl text-center text-yellow-100">
+    JSON parser and Base64 handler
+  </h1>
+
+  <div class="h-[90%] mt-6 flex flex-col pb-4 lg:flex-row">
+    <article
+      id="{{ tai }}"
+      class="w-[100%] lg:w-[40%] flex-1 min-h-[300px] overflow-auto border-2 border-gray-400"
+    ></article>
+
+    <div class="w-[100%] lg:w-[20%] p-5 flex flex-col gap-4 self-center">
+      <p class="text-lg text-center text-yellow-100">
+        Handler Text (right panel)
+      </p>
+
+      <button
+        (click)="onClickCopyClipboard()"
+        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
+      >
+        Copy Clipboard
+      </button>
+
+      <button
+        (click)="onClickMoveText()"
+        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
+      >
+        Move Left
+      </button>
+      <p class="text-lg text-center text-yellow-100">Base64</p>
+
+      <button
+        (click)="onClickDecode()"
+        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
+      >
+        Decode
+      </button>
+      <button
+        (click)="onClickEncode()"
+        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
+      >
+        Encode
+      </button>
+
+      <p class="text-lg text-center text-yellow-100">
+        Json Valid {{ jsonValid() ? "&#9989;" : "&#9940;" }}
+      </p>
+
+      <button
+        id="{{ buttonsJson.beu }}"
+        (click)="onClickBeautify()"
+        class="to-json p-2 cursor-not-allowed bg-gray-300 rounded-lg"
+      >
+        Beautify
+      </button>
+      <button
+        id="{{ buttonsJson.min }}"
+        (click)="onClickMinify()"
+        class="to-json p-2 cursor-not-allowed bg-gray-300 rounded-lg"
+      >
+        Minify
+      </button>
+    </div>
+
+    <article
+      id="{{ tao }}"
+      class="w-[100%] lg:w-[40%] flex-1 min-h-[300px] overflow-auto border-2 border-gray-400"
+    ></article>
+  </div>
+</main>
