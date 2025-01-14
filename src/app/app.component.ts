@@ -9,9 +9,9 @@ import {
 import { isPlatformBrowser } from "@angular/common";
 import { json } from "@codemirror/lang-json";
 import { EditorState, Extension } from "@codemirror/state";
-import { oneDark } from "@codemirror/theme-one-dark";
 import { copyClipboard, toggleButtonsStylesOptions } from "@utils/methods";
 import { EditorView, basicSetup } from "codemirror";
+import { monokai } from "./theme/monokai.theme";
 
 @Component({
 	selector: "app-root",
@@ -126,7 +126,7 @@ export class AppComponent implements AfterViewInit {
 		return EditorState.create({
 			extensions: [
 				basicSetup,
-				oneDark,
+				monokai,
 				json(),
 				EditorView.lineWrapping,
 				...optionalPlugins,
