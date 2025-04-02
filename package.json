@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "ng": "ng",
-    "dev": "ng serve --host=0.0.0.0",
+    "dev": "ng serve",
+    "host": "ng serve --host=0.0.0.0",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -25,7 +26,7 @@
     "@angular/router": "^19.0.4",
     "@angular/ssr": "^19.0.5",
     "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/state": "^6.5.0",
+    "@codemirror/state": "^6.5.2",
     "codemirror": "^6.0.1",
     "express": "^4.21.2",
     "rxjs": "~7.8.0",

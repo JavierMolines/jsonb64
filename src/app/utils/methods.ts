@@ -1,3 +1,14 @@
+export const encode = (input: string) => {
+	const utf8Bytes = new TextEncoder().encode(input);
+	return btoa(String.fromCharCode(...utf8Bytes));
+};
+
+export const decode = (base64: string) => {
+	const binaryString = atob(base64);
+	const utf8Bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
+	return new TextDecoder().decode(utf8Bytes);
+};
+
 export const copyClipboard = (data: string) => {
 	navigator.clipboard
 		.writeText(data)

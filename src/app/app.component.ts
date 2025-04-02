@@ -1,15 +1,13 @@
-import {
-	AfterViewInit,
-	Component,
-	Inject,
-	PLATFORM_ID,
-	signal,
-} from "@angular/core";
-
-import { isPlatformBrowser } from "@angular/common";
+import { AfterViewInit, Component, signal } from "@angular/core";
 import { json } from "@codemirror/lang-json";
 import { EditorState, Extension } from "@codemirror/state";
-import { copyClipboard, toggleButtonsStylesOptions } from "@utils/methods";
+import {
+	copyClipboard,
+	decode,
+	encode,
+	toggleButtonsStylesOptions,
+} from "@utils/methods";
+
 import { EditorView, basicSetup } from "codemirror";
 import { monokai } from "./theme/monokai.theme";
 
@@ -19,9 +17,6 @@ import { monokai } from "./theme/monokai.theme";
 	templateUrl: "./app.component.html",
 })
 export class AppComponent implements AfterViewInit {
-	// biome-ignore lint/complexity/noBannedTypes: <explanation>
-	constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
 	tai = "tain";
 	tao = "taou";
 
@@ -34,19 +29,6 @@ export class AppComponent implements AfterViewInit {
 
 	private editorInput!: EditorView;
 	private editorOutput!: EditorView;
-
-	private encode(input: string) {
-		const utf8Bytes = new TextEncoder().encode(input);
-		return btoa(String.fromCharCode(...utf8Bytes));
-	}
-
-	private decode(base64: string) {
-		const binaryString = atob(base64);
-		const utf8Bytes = Uint8Array.from(binaryString, (char) =>
-			char.charCodeAt(0),
-		);
-		return new TextDecoder().decode(utf8Bytes);
-	}
 
 	private getDomTextArea(id: string) {
 		return document.getElementById(id) as HTMLTextAreaElement;
@@ -74,7 +56,7 @@ export class AppComponent implements AfterViewInit {
 			return;
 		}
 
-		const result = flow === "encode" ? this.encode(value) : this.decode(value);
+		const result = flow === "encode" ? encode(value) : decode(value);
 		this.writeInEditor(this.editorOutput, result);
 	}
 
@@ -90,7 +72,7 @@ export class AppComponent implements AfterViewInit {
 					: JSON.stringify(json);
 
 			this.writeInEditor(this.editorOutput, format);
-		} catch (error) {}
+		} catch (_) {}
 	}
 
 	private handlerButtonsRightPanel(flow: "copy" | "move") {
@@ -114,7 +96,7 @@ export class AppComponent implements AfterViewInit {
 
 			this.jsonValid.set(true);
 			toggleButtonsStylesOptions(buttonsJson, true);
-		} catch (error) {
+		} catch (_) {
 			if (!this.jsonValid()) return; // Not reprocess same flow
 
 			this.jsonValid.set(false);
@@ -158,7 +140,10 @@ export class AppComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit(): void {
-		if (!isPlatformBrowser(this.platformId)) return;
+		if (typeof window === "undefined" || typeof document === "undefined") {
+			return;
+		}
+
 		this.loadEditorsInView();
 	}
 
