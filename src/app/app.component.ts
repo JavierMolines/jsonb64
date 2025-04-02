@@ -10,10 +10,11 @@ import {
 
 import { EditorView, basicSetup } from "codemirror";
 import { monokai } from "./theme/monokai.theme";
+import { IconComponent } from "@components/icon/icon.component";
 
 @Component({
 	selector: "app-root",
-	imports: [],
+	imports: [IconComponent],
 	templateUrl: "./app.component.html",
 })
 export class AppComponent implements AfterViewInit {
@@ -21,6 +22,7 @@ export class AppComponent implements AfterViewInit {
 	tao = "taou";
 
 	jsonValid = signal(false);
+	isResizing = false;
 
 	buttonsJson = {
 		min: "button-minify",
@@ -139,12 +141,55 @@ export class AppComponent implements AfterViewInit {
 		});
 	}
 
+	private assignEventDragSelect() {
+		const resizer = document.getElementById("resizer");
+		const panel1 = document.getElementById(this.tai);
+		const panel2 = document.getElementById(this.tao);
+		const option1 = document.getElementById("optionA");
+		const option2 = document.getElementById("optionB");
+
+		if (!resizer || !panel1 || !panel2 || !option1 || !option2) return;
+
+		resizer.addEventListener("mousedown", () => {
+			this.isResizing = true;
+			console.log("HERE 2");
+			document.addEventListener("mousemove", resize);
+			document.addEventListener("mouseup", () => {
+				console.log("HERE 3");
+				this.isResizing = false;
+				document.removeEventListener("mousemove", resize);
+			});
+		});
+
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		const resize = (e: any) => {
+			if (this.isResizing) {
+				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				const content: any = document.getElementById("container");
+				if (!content) return;
+
+				const containerWidth = content.offsetWidth;
+				const newPanel1Width = e.clientX;
+				const newPanel2Width =
+					containerWidth - newPanel1Width - resizer.offsetWidth;
+
+				if (newPanel1Width > 200 && newPanel2Width > 200) {
+					panel1.style.width = `${newPanel1Width}px`;
+					panel2.style.width = `${newPanel2Width}px`;
+					option1.style.width = `${newPanel1Width}px`;
+					option2.style.width = `${newPanel2Width}px`;
+				}
+			}
+		};
+	}
+
 	ngAfterViewInit(): void {
 		if (typeof window === "undefined" || typeof document === "undefined") {
 			return;
 		}
 
 		this.loadEditorsInView();
+		this.assignEventDragSelect();
 	}
 
 	onClickMoveText() {

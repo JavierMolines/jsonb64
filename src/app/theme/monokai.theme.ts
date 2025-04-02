@@ -6,7 +6,7 @@ import { tags as t } from "@lezer/highlight";
 // Monokai Dark color palette
 const background = "#272822";
 const foreground = "#f8f8f2";
-const comment = "#75715e";
+const comment = "#a6a6a6";
 const cyan = "#66d9ef";
 const green = "#a6e22e";
 const orange = "#fd971f";
