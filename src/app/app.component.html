@@ -7,40 +7,43 @@
     <div id="optionA" class="w-[47%] gap-4 flex p-2">
       <button (click)="onClickMinify('1')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
           iconName="compress"
         />
       </button>
       <button (click)="onClickBeautify('1')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
           iconName="format"
         />
       </button>
-      <button class="group">
-        <app-icon customClass="group-hover:stroke-amber-400" iconName="copy" />
-      </button>
-      <button class="group">
+      <button (click)="onClickCopyClipboard('1')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
+          iconName="copy"
+        />
+      </button>
+      <button (click)="onClickEncode('1')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-emerald-400"
           iconName="base64-encode"
         />
       </button>
-      <button class="group">
+      <button (click)="onClickDecode('1')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
           iconName="base64-decode"
         />
       </button>
       <button class="group">
-        <app-icon customClass="group-hover:stroke-amber-400" iconName="erase" />
-      </button>
-      <button class="group">
-        <app-icon customClass="group-hover:stroke-amber-400" iconName="clean" />
-      </button>
-      <button class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
+          iconName="erase"
+        />
+      </button>
+      <button (click)="onClickMoveText('1')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-emerald-400"
           iconName="arrow-right"
         />
       </button>
@@ -52,40 +55,43 @@
     >
       <button (click)="onClickMinify('2')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
           iconName="compress"
         />
       </button>
       <button (click)="onClickBeautify('2')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
           iconName="format"
         />
       </button>
-      <button class="group">
-        <app-icon customClass="group-hover:stroke-amber-400" iconName="copy" />
-      </button>
-      <button class="group">
+      <button (click)="onClickCopyClipboard('2')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
+          iconName="copy"
+        />
+      </button>
+      <button (click)="onClickEncode('2')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-emerald-400"
           iconName="base64-encode"
         />
       </button>
-      <button class="group">
+      <button (click)="onClickDecode('2')" class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
           iconName="base64-decode"
         />
       </button>
       <button class="group">
-        <app-icon customClass="group-hover:stroke-amber-400" iconName="erase" />
-      </button>
-      <button class="group">
-        <app-icon customClass="group-hover:stroke-amber-400" iconName="clean" />
-      </button>
-      <button class="group">
         <app-icon
-          customClass="group-hover:stroke-amber-400"
+          customClass="group-hover:stroke-emerald-400"
+          iconName="erase"
+        />
+      </button>
+      <button (click)="onClickMoveText('2')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-emerald-400"
           iconName="arrow-left"
         />
       </button>
@@ -108,7 +114,7 @@
       id="resizer"
       class="w-[6%] select-none h-[300px] cursor-ew-resize p-5 flex items-center justify-center self-center bg-gray-800 hover:bg-gray-700 focus:bg-gray-700"
     >
-      <app-icon customClass="group-hover:stroke-amber-400" iconName="drag" />
+      <app-icon customClass="group-hover:stroke-emerald-400" iconName="drag" />
     </div>
 
     <article

@@ -4,12 +4,14 @@ import {
 	signal,
 	WritableSignal,
 } from "@angular/core";
+
 import { json } from "@codemirror/lang-json";
 import { EditorState, Extension } from "@codemirror/state";
 import { copyClipboard, decode, encode } from "@utils/methods";
 import { EditorView, basicSetup } from "codemirror";
 import { monokai } from "./theme/monokai.theme";
 import { IconComponent } from "@components/icon/icon.component";
+import { assignEventDragSelect } from "@utils/draganddrop";
 
 @Component({
 	selector: "app-root",
@@ -38,6 +40,14 @@ export class AppComponent implements AfterViewInit {
 		return editor.state.doc.toString();
 	}
 
+	private getConfigByPanel(panel: "1" | "2") {
+		const handlerPanel = panel === "1";
+		return {
+			json: handlerPanel ? this.jsonValidOne : this.jsonValidTwo,
+			view: handlerPanel ? this.editorInput : this.editorOutput,
+		};
+	}
+
 	private writeInEditor(editor: EditorView, content: string) {
 		editor.dispatch({
 			changes: {
@@ -48,31 +58,15 @@ export class AppComponent implements AfterViewInit {
 		});
 	}
 
-	private handlerParser(flow: "decode" | "encode") {
-		const value = this.getTextToCodeMirror(this.editorInput);
-
-		if (value.trim() === "") {
-			alert("Insert text..");
-			return;
-		}
+	private mirrorPanelControlBase64(
+		flow: "decode" | "encode",
+		view: EditorView,
+	) {
+		const value = this.getTextToCodeMirror(view);
+		if (value.trim() === "") return;
 
 		const result = flow === "encode" ? encode(value) : decode(value);
-		this.writeInEditor(this.editorOutput, result);
-	}
-
-	private handlerJsonMethods(flow: "minify" | "clean") {
-		if (!this.jsonValidOne()) return;
-
-		try {
-			const input = this.getTextToCodeMirror(this.editorInput);
-			const json = JSON.parse(input);
-			const format =
-				flow === "clean"
-					? JSON.stringify(json, null, "\t")
-					: JSON.stringify(json);
-
-			this.writeInEditor(this.editorOutput, format);
-		} catch (_) {}
+		this.writeInEditor(view, result);
 	}
 
 	private mirrorPanelControlJson(
@@ -94,15 +88,20 @@ export class AppComponent implements AfterViewInit {
 		} catch (_) {}
 	}
 
-	private handlerButtonsRightPanel(flow: "copy" | "move") {
-		const value = this.getTextToCodeMirror(this.editorOutput);
+	private mirrorPanelControlCopy(flow: "copy" | "move", panel: "1" | "2") {
+		const handlerPanel = panel === "1";
+		const view = handlerPanel ? this.editorInput : this.editorOutput;
+		const value = this.getTextToCodeMirror(view);
+
 		if (value.trim() === "") return;
 
 		if (flow === "copy") {
 			copyClipboard(value);
-		} else {
-			this.writeInEditor(this.editorInput, value);
+			return;
 		}
+
+		const mirror = handlerPanel ? this.editorOutput : this.editorInput;
+		this.writeInEditor(mirror, value);
 	}
 
 	private validEventCodeMirror(content: string, json: WritableSignal<boolean>) {
@@ -159,46 +158,6 @@ export class AppComponent implements AfterViewInit {
 		});
 	}
 
-	private assignEventDragSelect() {
-		const resizer = document.getElementById("resizer");
-		const panel1 = document.getElementById(this.tai);
-		const panel2 = document.getElementById(this.tao);
-		const option1 = document.getElementById("optionA");
-		const option2 = document.getElementById("optionB");
-
-		if (!resizer || !panel1 || !panel2 || !option1 || !option2) return;
-
-		resizer.addEventListener("mousedown", () => {
-			this.isResizing = true;
-			document.addEventListener("mousemove", resize);
-			document.addEventListener("mouseup", () => {
-				this.isResizing = false;
-				document.removeEventListener("mousemove", resize);
-			});
-		});
-
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		const resize = (e: any) => {
-			if (this.isResizing) {
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-				const content: any = document.getElementById("container");
-				if (!content) return;
-
-				const containerWidth = content.offsetWidth;
-				const newPanel1Width = e.clientX;
-				const newPanel2Width =
-					containerWidth - newPanel1Width - resizer.offsetWidth;
-
-				if (newPanel1Width > 200 && newPanel2Width > 200) {
-					panel1.style.width = `${newPanel1Width}px`;
-					panel2.style.width = `${newPanel2Width}px`;
-					option1.style.width = `${newPanel1Width}px`;
-					option2.style.width = `${newPanel2Width}px`;
-				}
-			}
-		};
-	}
-
 	private loadTextInLocalStorage() {
 		const partialsOne = localStorage.getItem(this.nameStorageOne);
 		const partialsTwo = localStorage.getItem(this.nameStorageTwo);
@@ -218,43 +177,39 @@ export class AppComponent implements AfterViewInit {
 		}
 
 		this.loadEditorsInView();
-		this.assignEventDragSelect();
 		this.loadTextInLocalStorage();
+		assignEventDragSelect({
+			panelOne: this.tai,
+			panelTwo: this.tao,
+			resize: this.isResizing,
+		});
 	}
 
-	onClickMoveText() {
-		this.handlerButtonsRightPanel("move");
+	onClickMoveText(panel: "1" | "2") {
+		this.mirrorPanelControlCopy("move", panel);
 	}
 
-	onClickCopyClipboard() {
-		this.handlerButtonsRightPanel("copy");
+	onClickCopyClipboard(panel: "1" | "2") {
+		this.mirrorPanelControlCopy("copy", panel);
 	}
 
-	onClickEncode() {
-		this.handlerParser("encode");
+	onClickEncode(panel: "1" | "2") {
+		const config = this.getConfigByPanel(panel);
+		this.mirrorPanelControlBase64("encode", config.view);
 	}
 
-	onClickDecode() {
-		this.handlerParser("decode");
+	onClickDecode(panel: "1" | "2") {
+		const config = this.getConfigByPanel(panel);
+		this.mirrorPanelControlBase64("decode", config.view);
 	}
 
 	onClickBeautify(panel: "1" | "2") {
-		const handlerPanel = panel === "1";
-		const config = {
-			json: handlerPanel ? this.jsonValidOne : this.jsonValidTwo,
-			view: handlerPanel ? this.editorInput : this.editorOutput,
-		};
-
+		const config = this.getConfigByPanel(panel);
 		this.mirrorPanelControlJson("clean", config.json, config.view);
 	}
 
 	onClickMinify(panel: "1" | "2") {
-		const handlerPanel = panel === "1";
-		const config = {
-			json: handlerPanel ? this.jsonValidOne : this.jsonValidTwo,
-			view: handlerPanel ? this.editorInput : this.editorOutput,
-		};
-
+		const config = this.getConfigByPanel(panel);
 		this.mirrorPanelControlJson("minify", config.json, config.view);
 	}
 }
