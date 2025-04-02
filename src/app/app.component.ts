@@ -1,13 +1,7 @@
 import { AfterViewInit, Component, signal } from "@angular/core";
 import { json } from "@codemirror/lang-json";
 import { EditorState, Extension } from "@codemirror/state";
-import {
-	copyClipboard,
-	decode,
-	encode,
-	toggleButtonsStylesOptions,
-} from "@utils/methods";
-
+import { copyClipboard, decode, encode } from "@utils/methods";
 import { EditorView, basicSetup } from "codemirror";
 import { monokai } from "./theme/monokai.theme";
 import { IconComponent } from "@components/icon/icon.component";
@@ -21,13 +15,9 @@ export class AppComponent implements AfterViewInit {
 	tai = "tain";
 	tao = "taou";
 
-	jsonValid = signal(false);
 	isResizing = false;
-
-	buttonsJson = {
-		min: "button-minify",
-		beu: "button-beutify",
-	};
+	jsonValidOne = signal(false);
+	jsonValidTwo = signal(false);
 
 	private editorInput!: EditorView;
 	private editorOutput!: EditorView;
@@ -63,7 +53,7 @@ export class AppComponent implements AfterViewInit {
 	}
 
 	private handlerJsonMethods(flow: "minify" | "clean") {
-		if (!this.jsonValid()) return;
+		if (!this.jsonValidOne()) return;
 
 		try {
 			const input = this.getTextToCodeMirror(this.editorInput);
@@ -88,21 +78,25 @@ export class AppComponent implements AfterViewInit {
 		}
 	}
 
-	private validEventChangeTextCodeMirror(content: string) {
-		const buttonsJson = document.querySelectorAll(".to-json");
-
+	private validEventInputCodeMirror(content: string) {
 		try {
 			JSON.parse(content);
-
-			if (this.jsonValid()) return; // Not reprocess same flow
-
-			this.jsonValid.set(true);
-			toggleButtonsStylesOptions(buttonsJson, true);
+			if (this.jsonValidOne()) return;
+			this.jsonValidOne.set(true);
 		} catch (_) {
-			if (!this.jsonValid()) return; // Not reprocess same flow
+			if (!this.jsonValidOne()) return;
+			this.jsonValidOne.set(false);
+		}
+	}
 
-			this.jsonValid.set(false);
-			toggleButtonsStylesOptions(buttonsJson, false);
+	private validEventOutputCodeMirror(content: string) {
+		try {
+			JSON.parse(content);
+			if (this.jsonValidTwo()) return;
+			this.jsonValidTwo.set(true);
+		} catch (_) {
+			if (!this.jsonValidTwo()) return;
+			this.jsonValidTwo.set(false);
 		}
 	}
 
@@ -124,19 +118,25 @@ export class AppComponent implements AfterViewInit {
 
 		if (!input || !output) return;
 
-		const updateListener = EditorView.updateListener.of((update) => {
+		const updateInput = EditorView.updateListener.of((update) => {
 			if (!update.docChanged) return;
 			const content = update.state.doc.toString();
-			this.validEventChangeTextCodeMirror(content);
+			this.validEventInputCodeMirror(content);
+		});
+
+		const updateOutput = EditorView.updateListener.of((update) => {
+			if (!update.docChanged) return;
+			const content = update.state.doc.toString();
+			this.validEventOutputCodeMirror(content);
 		});
 
 		this.editorInput = new EditorView({
-			state: this.loadConfigEditor([updateListener]),
+			state: this.loadConfigEditor([updateInput]),
 			parent: input,
 		});
 
 		this.editorOutput = new EditorView({
-			state: this.loadConfigEditor([]),
+			state: this.loadConfigEditor([updateOutput]),
 			parent: output,
 		});
 	}
@@ -152,10 +152,8 @@ export class AppComponent implements AfterViewInit {
 
 		resizer.addEventListener("mousedown", () => {
 			this.isResizing = true;
-			console.log("HERE 2");
 			document.addEventListener("mousemove", resize);
 			document.addEventListener("mouseup", () => {
-				console.log("HERE 3");
 				this.isResizing = false;
 				document.removeEventListener("mousemove", resize);
 			});
