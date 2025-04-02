@@ -1,4 +1,9 @@
-import { AfterViewInit, Component, signal } from "@angular/core";
+import {
+	AfterViewInit,
+	Component,
+	signal,
+	WritableSignal,
+} from "@angular/core";
 import { json } from "@codemirror/lang-json";
 import { EditorState, Extension } from "@codemirror/state";
 import { copyClipboard, decode, encode } from "@utils/methods";
@@ -15,10 +20,13 @@ export class AppComponent implements AfterViewInit {
 	tai = "tain";
 	tao = "taou";
 
-	isResizing = false;
+	nameStorageOne = "contentOne";
+	nameStorageTwo = "contentTwo";
+
 	jsonValidOne = signal(false);
 	jsonValidTwo = signal(false);
 
+	private isResizing = false;
 	private editorInput!: EditorView;
 	private editorOutput!: EditorView;
 
@@ -67,6 +75,25 @@ export class AppComponent implements AfterViewInit {
 		} catch (_) {}
 	}
 
+	private mirrorPanelControlJson(
+		flow: "minify" | "clean",
+		json: WritableSignal<boolean>,
+		view: EditorView,
+	) {
+		if (!json()) return;
+
+		try {
+			const input = this.getTextToCodeMirror(view);
+			const json = JSON.parse(input);
+			const format =
+				flow === "clean"
+					? JSON.stringify(json, null, "\t")
+					: JSON.stringify(json);
+
+			this.writeInEditor(view, format);
+		} catch (_) {}
+	}
+
 	private handlerButtonsRightPanel(flow: "copy" | "move") {
 		const value = this.getTextToCodeMirror(this.editorOutput);
 		if (value.trim() === "") return;
@@ -78,25 +105,14 @@ export class AppComponent implements AfterViewInit {
 		}
 	}
 
-	private validEventInputCodeMirror(content: string) {
+	private validEventCodeMirror(content: string, json: WritableSignal<boolean>) {
 		try {
 			JSON.parse(content);
-			if (this.jsonValidOne()) return;
-			this.jsonValidOne.set(true);
+			if (json()) return;
+			json.set(true);
 		} catch (_) {
-			if (!this.jsonValidOne()) return;
-			this.jsonValidOne.set(false);
-		}
-	}
-
-	private validEventOutputCodeMirror(content: string) {
-		try {
-			JSON.parse(content);
-			if (this.jsonValidTwo()) return;
-			this.jsonValidTwo.set(true);
-		} catch (_) {
-			if (!this.jsonValidTwo()) return;
-			this.jsonValidTwo.set(false);
+			if (!json()) return;
+			json.set(false);
 		}
 	}
 
@@ -121,13 +137,15 @@ export class AppComponent implements AfterViewInit {
 		const updateInput = EditorView.updateListener.of((update) => {
 			if (!update.docChanged) return;
 			const content = update.state.doc.toString();
-			this.validEventInputCodeMirror(content);
+			localStorage.setItem(this.nameStorageOne, content);
+			this.validEventCodeMirror(content, this.jsonValidOne);
 		});
 
 		const updateOutput = EditorView.updateListener.of((update) => {
 			if (!update.docChanged) return;
 			const content = update.state.doc.toString();
-			this.validEventOutputCodeMirror(content);
+			localStorage.setItem(this.nameStorageTwo, content);
+			this.validEventCodeMirror(content, this.jsonValidTwo);
 		});
 
 		this.editorInput = new EditorView({
@@ -181,6 +199,19 @@ export class AppComponent implements AfterViewInit {
 		};
 	}
 
+	private loadTextInLocalStorage() {
+		const partialsOne = localStorage.getItem(this.nameStorageOne);
+		const partialsTwo = localStorage.getItem(this.nameStorageTwo);
+
+		if (partialsOne && partialsOne.trim() !== "") {
+			this.writeInEditor(this.editorInput, partialsOne);
+		}
+
+		if (partialsTwo && partialsTwo.trim() !== "") {
+			this.writeInEditor(this.editorOutput, partialsTwo);
+		}
+	}
+
 	ngAfterViewInit(): void {
 		if (typeof window === "undefined" || typeof document === "undefined") {
 			return;
@@ -188,6 +219,7 @@ export class AppComponent implements AfterViewInit {
 
 		this.loadEditorsInView();
 		this.assignEventDragSelect();
+		this.loadTextInLocalStorage();
 	}
 
 	onClickMoveText() {
@@ -206,11 +238,23 @@ export class AppComponent implements AfterViewInit {
 		this.handlerParser("decode");
 	}
 
-	onClickBeautify() {
-		this.handlerJsonMethods("clean");
+	onClickBeautify(panel: "1" | "2") {
+		const handlerPanel = panel === "1";
+		const config = {
+			json: handlerPanel ? this.jsonValidOne : this.jsonValidTwo,
+			view: handlerPanel ? this.editorInput : this.editorOutput,
+		};
+
+		this.mirrorPanelControlJson("clean", config.json, config.view);
 	}
 
-	onClickMinify() {
-		this.handlerJsonMethods("minify");
+	onClickMinify(panel: "1" | "2") {
+		const handlerPanel = panel === "1";
+		const config = {
+			json: handlerPanel ? this.jsonValidOne : this.jsonValidTwo,
+			view: handlerPanel ? this.editorInput : this.editorOutput,
+		};
+
+		this.mirrorPanelControlJson("minify", config.json, config.view);
 	}
 }

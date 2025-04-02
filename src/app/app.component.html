@@ -5,29 +5,44 @@
 
   <section class="flex text-white">
     <div id="optionA" class="w-[47%] gap-4 flex p-2">
-      <button>
-        <app-icon iconName="compress" />
+      <button (click)="onClickMinify('1')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="compress"
+        />
       </button>
-      <button>
-        <app-icon iconName="format" />
+      <button (click)="onClickBeautify('1')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="format"
+        />
       </button>
-      <button>
-        <app-icon iconName="copy" />
+      <button class="group">
+        <app-icon customClass="group-hover:stroke-amber-400" iconName="copy" />
       </button>
-      <button>
-        <app-icon iconName="base64-encode" />
+      <button class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="base64-encode"
+        />
       </button>
-      <button>
-        <app-icon iconName="base64-decode" />
+      <button class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="base64-decode"
+        />
       </button>
-      <button>
-        <app-icon iconName="erase" />
+      <button class="group">
+        <app-icon customClass="group-hover:stroke-amber-400" iconName="erase" />
       </button>
-      <button>
-        <app-icon iconName="clean" />
+      <button class="group">
+        <app-icon customClass="group-hover:stroke-amber-400" iconName="clean" />
       </button>
-      <button>
-        <app-icon iconName="arrow-right" />
+      <button class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="arrow-right"
+        />
       </button>
     </div>
     <div class="w-[6%] h-[1px] flex justify-center"></div>
@@ -35,29 +50,44 @@
       id="optionB"
       class="w-[47%] gap-4 flex p-2 flex-row-reverse justify-start"
     >
-      <button>
-        <app-icon iconName="compress" />
+      <button (click)="onClickMinify('2')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="compress"
+        />
       </button>
-      <button>
-        <app-icon iconName="format" />
+      <button (click)="onClickBeautify('2')" class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="format"
+        />
       </button>
-      <button>
-        <app-icon iconName="copy" />
+      <button class="group">
+        <app-icon customClass="group-hover:stroke-amber-400" iconName="copy" />
       </button>
-      <button>
-        <app-icon iconName="base64-encode" />
+      <button class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="base64-encode"
+        />
       </button>
-      <button>
-        <app-icon iconName="base64-decode" />
+      <button class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="base64-decode"
+        />
       </button>
-      <button>
-        <app-icon iconName="erase" />
+      <button class="group">
+        <app-icon customClass="group-hover:stroke-amber-400" iconName="erase" />
       </button>
-      <button>
-        <app-icon iconName="clean" />
+      <button class="group">
+        <app-icon customClass="group-hover:stroke-amber-400" iconName="clean" />
       </button>
-      <button>
-        <app-icon iconName="arrow-left" />
+      <button class="group">
+        <app-icon
+          customClass="group-hover:stroke-amber-400"
+          iconName="arrow-left"
+        />
       </button>
     </div>
   </section>
@@ -65,19 +95,31 @@
   <section id="container" class="flex-1 flex flex-col lg:flex-row">
     <article
       id="{{ tai }}"
-      class="flex-0 w-[47%] max-h-[calc(100dvh-90px)] overflow-auto border-2 border-emerald-100 bg-[#272822]"
-    ></article>
+      class="relative flex-0 w-[47%] max-h-[calc(100dvh-90px)] overflow-auto border-2 border-amber-100 bg-[#272822]"
+    >
+      <div
+        class="z-10 text-right pr-20 bg-[#69646465] w-full p-0 m-0 absolute bottom-0 right-0 text-white"
+      >
+        JSON Valid {{ jsonValidOne() ? "&#9989;" : "&#9940;" }}
+      </div>
+    </article>
 
     <div
       id="resizer"
       class="w-[6%] select-none h-[300px] cursor-ew-resize p-5 flex items-center justify-center self-center bg-gray-800 hover:bg-gray-700 focus:bg-gray-700"
     >
-      <app-icon iconName="drag" />
+      <app-icon customClass="group-hover:stroke-amber-400" iconName="drag" />
     </div>
 
     <article
       id="{{ tao }}"
-      class="flex-0 w-[47%] max-h-[calc(100dvh-90px)] overflow-auto border-2 border-emerald-100 bg-[#272822]"
-    ></article>
+      class="relative flex-0 w-[47%] max-h-[calc(100dvh-90px)] overflow-auto border-2 border-amber-100 bg-[#272822]"
+    >
+      <div
+        class="z-10 text-right pr-20 bg-[#69646465] w-full p-0 m-0 absolute bottom-0 right-0 text-white"
+      >
+        JSON Valid {{ jsonValidTwo() ? "&#9989;" : "&#9940;" }}
+      </div>
+    </article>
   </section>
 </main>
