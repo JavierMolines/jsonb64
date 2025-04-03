@@ -179,8 +179,6 @@ export class AppComponent implements AfterViewInit {
 		this.loadEditorsInView();
 		this.loadTextInLocalStorage();
 		assignEventDragSelect({
-			panelOne: this.tai,
-			panelTwo: this.tao,
 			resize: this.isResizing,
 		});
 	}

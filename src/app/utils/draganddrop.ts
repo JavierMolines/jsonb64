@@ -1,19 +1,13 @@
 export const assignEventDragSelect = ({
-	panelOne,
-	panelTwo,
 	resize,
 }: {
-	panelOne: string;
-	panelTwo: string;
 	resize: boolean;
 }) => {
 	const resizer = document.getElementById("resizer");
-	const panel1 = document.getElementById(panelOne);
-	const panel2 = document.getElementById(panelTwo);
-	const option1 = document.getElementById("optionA");
-	const option2 = document.getElementById("optionB");
+	const panel1 = document.getElementById("panelone");
+	const panel2 = document.getElementById("paneltwo");
 
-	if (!resizer || !panel1 || !panel2 || !option1 || !option2) return;
+	if (!resizer || !panel1 || !panel2) return;
 
 	resizer.addEventListener("mousedown", () => {
 		resize = true;
@@ -39,8 +33,6 @@ export const assignEventDragSelect = ({
 			if (newPanel1Width > 200 && newPanel2Width > 200) {
 				panel1.style.width = `${newPanel1Width}px`;
 				panel2.style.width = `${newPanel2Width}px`;
-				option1.style.width = `${newPanel1Width}px`;
-				option2.style.width = `${newPanel2Width}px`;
 			}
 		}
 	};

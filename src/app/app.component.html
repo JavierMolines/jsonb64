@@ -3,129 +3,119 @@
     JSON parser and Base64 handler
   </h1>
 
-  <section class="flex text-white">
-    <div id="optionA" class="w-[47%] gap-4 flex p-2">
-      <button (click)="onClickMinify('1')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="compress"
-        />
-      </button>
-      <button (click)="onClickBeautify('1')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="format"
-        />
-      </button>
-      <button (click)="onClickCopyClipboard('1')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="copy"
-        />
-      </button>
-      <button (click)="onClickEncode('1')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="base64-encode"
-        />
-      </button>
-      <button (click)="onClickDecode('1')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="base64-decode"
-        />
-      </button>
-      <button class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="erase"
-        />
-      </button>
-      <button (click)="onClickMoveText('1')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="arrow-right"
-        />
-      </button>
-    </div>
-    <div class="w-[6%] h-[1px] flex justify-center"></div>
-    <div
-      id="optionB"
-      class="w-[47%] gap-4 flex p-2 flex-row-reverse justify-start"
-    >
-      <button (click)="onClickMinify('2')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="compress"
-        />
-      </button>
-      <button (click)="onClickBeautify('2')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="format"
-        />
-      </button>
-      <button (click)="onClickCopyClipboard('2')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="copy"
-        />
-      </button>
-      <button (click)="onClickEncode('2')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="base64-encode"
-        />
-      </button>
-      <button (click)="onClickDecode('2')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="base64-decode"
-        />
-      </button>
-      <button class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="erase"
-        />
-      </button>
-      <button (click)="onClickMoveText('2')" class="group">
-        <app-icon
-          customClass="group-hover:stroke-emerald-400"
-          iconName="arrow-left"
-        />
-      </button>
-    </div>
-  </section>
+  <!-- PANEL ONE -->
+  <section id="container" class="flex-1 flex flex-col md:flex-row">
+    <div id="panelone" class="w-[47%] flex-0 max-h-[calc(100dvh-90px)]">
+      <nav class="gap-4 flex p-2">
+        <button (click)="onClickMinify('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="compress"
+          />
+        </button>
+        <button (click)="onClickBeautify('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="format"
+          />
+        </button>
+        <button (click)="onClickCopyClipboard('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="copy"
+          />
+        </button>
+        <button (click)="onClickEncode('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-encode"
+          />
+        </button>
+        <button (click)="onClickDecode('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-decode"
+          />
+        </button>
+        <button (click)="onClickMoveText('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="arrow-right"
+          />
+        </button>
+      </nav>
 
-  <section id="container" class="flex-1 flex flex-col lg:flex-row">
-    <article
-      id="{{ tai }}"
-      class="relative flex-0 w-[47%] max-h-[calc(100dvh-90px)] overflow-auto border-2 border-amber-100 bg-[#272822]"
-    >
-      <div
-        class="z-10 text-right pr-20 bg-[#69646465] w-full p-0 m-0 absolute bottom-0 right-0 text-white"
+      <article
+        id="{{ tai }}"
+        class="h-full relative flex-0 overflow-auto border-2 border-amber-100 bg-[#272822]"
       >
-        JSON Valid {{ jsonValidOne() ? "&#9989;" : "&#9940;" }}
-      </div>
-    </article>
+        <div
+          class="z-10 text-left bg-[#69646465] w-full p-0 m-0 px-2 absolute bottom-0 left-0 text-white"
+        >
+          JSON Valid {{ jsonValidOne() ? "&#9989;" : "&#9940;" }}
+        </div>
+      </article>
+    </div>
 
+    <!-- DRAG AND DROP -->
     <div
       id="resizer"
-      class="w-[6%] select-none h-[300px] cursor-ew-resize p-5 flex items-center justify-center self-center bg-gray-800 hover:bg-gray-700 focus:bg-gray-700"
+      class="hidden w-[6%] select-none h-[300px] cursor-ew-resize p-5 md:flex items-center justify-center self-center bg-gray-800 hover:bg-gray-700 focus:bg-gray-700"
     >
       <app-icon customClass="group-hover:stroke-emerald-400" iconName="drag" />
     </div>
 
-    <article
-      id="{{ tao }}"
-      class="relative flex-0 w-[47%] max-h-[calc(100dvh-90px)] overflow-auto border-2 border-amber-100 bg-[#272822]"
-    >
-      <div
-        class="z-10 text-right pr-20 bg-[#69646465] w-full p-0 m-0 absolute bottom-0 right-0 text-white"
+    <!-- PANEL TWO -->
+    <div id="paneltwo" class="w-[47%] flex-0 max-h-[calc(100dvh-90px)]">
+      <nav class="gap-4 flex p-2 flex-row-reverse justify-start">
+        <button (click)="onClickMinify('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="compress"
+          />
+        </button>
+        <button (click)="onClickBeautify('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="format"
+          />
+        </button>
+        <button (click)="onClickCopyClipboard('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="copy"
+          />
+        </button>
+        <button (click)="onClickEncode('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-encode"
+          />
+        </button>
+        <button (click)="onClickDecode('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-decode"
+          />
+        </button>
+        <button (click)="onClickMoveText('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="arrow-left"
+          />
+        </button>
+      </nav>
+
+      <article
+        id="{{ tao }}"
+        class="h-full relative flex-0 overflow-auto border-2 border-amber-100 bg-[#272822]"
       >
-        JSON Valid {{ jsonValidTwo() ? "&#9989;" : "&#9940;" }}
-      </div>
-    </article>
+        <div
+          class="z-10 text-right bg-[#69646465] w-full p-0 m-0 px-2 absolute bottom-0 left-0 text-white"
+        >
+          JSON Valid {{ jsonValidTwo() ? "&#9989;" : "&#9940;" }}
+        </div>
+      </article>
+    </div>
   </section>
 </main>
