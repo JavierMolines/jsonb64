@@ -1,17 +1,17 @@
 import {
 	AfterViewInit,
 	Component,
-	signal,
 	WritableSignal,
+	signal,
 } from "@angular/core";
 
 import { json } from "@codemirror/lang-json";
 import { EditorState, Extension } from "@codemirror/state";
+import { IconComponent } from "@components/icon/icon.component";
+import { assignEventDragSelect } from "@utils/draganddrop";
 import { copyClipboard, decode, encode } from "@utils/methods";
 import { EditorView, basicSetup } from "codemirror";
 import { monokai } from "./theme/monokai.theme";
-import { IconComponent } from "@components/icon/icon.component";
-import { assignEventDragSelect } from "@utils/draganddrop";
 
 @Component({
 	selector: "app-root",

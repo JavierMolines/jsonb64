@@ -1,8 +1,4 @@
-export const assignEventDragSelect = ({
-	resize,
-}: {
-	resize: boolean;
-}) => {
+export const assignEventDragSelect = ({ resize }: { resize: boolean }) => {
 	const resizer = document.getElementById("resizer");
 	const panel1 = document.getElementById("panelone");
 	const panel2 = document.getElementById("paneltwo");
