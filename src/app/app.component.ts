@@ -1,52 +1,36 @@
 import {
 	AfterViewInit,
 	Component,
-	Inject,
-	PLATFORM_ID,
+	WritableSignal,
 	signal,
 } from "@angular/core";
 
-import { isPlatformBrowser } from "@angular/common";
 import { json } from "@codemirror/lang-json";
 import { EditorState, Extension } from "@codemirror/state";
-import { copyClipboard, toggleButtonsStylesOptions } from "@utils/methods";
+import { IconComponent } from "@components/icon/icon.component";
+import { assignEventDragSelect } from "@utils/draganddrop";
+import { copyClipboard, decode, encode } from "@utils/methods";
 import { EditorView, basicSetup } from "codemirror";
 import { monokai } from "./theme/monokai.theme";
 
 @Component({
 	selector: "app-root",
-	imports: [],
+	imports: [IconComponent],
 	templateUrl: "./app.component.html",
 })
 export class AppComponent implements AfterViewInit {
-	// biome-ignore lint/complexity/noBannedTypes: <explanation>
-	constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
 	tai = "tain";
 	tao = "taou";
 
-	jsonValid = signal(false);
+	nameStorageOne = "contentOne";
+	nameStorageTwo = "contentTwo";
 
-	buttonsJson = {
-		min: "button-minify",
-		beu: "button-beutify",
-	};
+	jsonValidOne = signal(false);
+	jsonValidTwo = signal(false);
 
+	private isResizing = false;
 	private editorInput!: EditorView;
 	private editorOutput!: EditorView;
-
-	private encode(input: string) {
-		const utf8Bytes = new TextEncoder().encode(input);
-		return btoa(String.fromCharCode(...utf8Bytes));
-	}
-
-	private decode(base64: string) {
-		const binaryString = atob(base64);
-		const utf8Bytes = Uint8Array.from(binaryString, (char) =>
-			char.charCodeAt(0),
-		);
-		return new TextDecoder().decode(utf8Bytes);
-	}
 
 	private getDomTextArea(id: string) {
 		return document.getElementById(id) as HTMLTextAreaElement;
@@ -54,6 +38,14 @@ export class AppComponent implements AfterViewInit {
 
 	private getTextToCodeMirror(editor: EditorView) {
 		return editor.state.doc.toString();
+	}
+
+	private getConfigByPanel(panel: "1" | "2") {
+		const handlerPanel = panel === "1";
+		return {
+			json: handlerPanel ? this.jsonValidOne : this.jsonValidTwo,
+			view: handlerPanel ? this.editorInput : this.editorOutput,
+		};
 	}
 
 	private writeInEditor(editor: EditorView, content: string) {
@@ -66,59 +58,60 @@ export class AppComponent implements AfterViewInit {
 		});
 	}
 
-	private handlerParser(flow: "decode" | "encode") {
-		const value = this.getTextToCodeMirror(this.editorInput);
+	private mirrorPanelControlBase64(
+		flow: "decode" | "encode",
+		view: EditorView,
+	) {
+		const value = this.getTextToCodeMirror(view);
+		if (value.trim() === "") return;
 
-		if (value.trim() === "") {
-			alert("Insert text..");
-			return;
-		}
-
-		const result = flow === "encode" ? this.encode(value) : this.decode(value);
-		this.writeInEditor(this.editorOutput, result);
+		const result = flow === "encode" ? encode(value) : decode(value);
+		this.writeInEditor(view, result);
 	}
 
-	private handlerJsonMethods(flow: "minify" | "clean") {
-		if (!this.jsonValid()) return;
+	private mirrorPanelControlJson(
+		flow: "minify" | "clean",
+		json: WritableSignal<boolean>,
+		view: EditorView,
+	) {
+		if (!json()) return;
 
 		try {
-			const input = this.getTextToCodeMirror(this.editorInput);
+			const input = this.getTextToCodeMirror(view);
 			const json = JSON.parse(input);
 			const format =
 				flow === "clean"
 					? JSON.stringify(json, null, "\t")
 					: JSON.stringify(json);
 
-			this.writeInEditor(this.editorOutput, format);
-		} catch (error) {}
+			this.writeInEditor(view, format);
+		} catch (_) {}
 	}
 
-	private handlerButtonsRightPanel(flow: "copy" | "move") {
-		const value = this.getTextToCodeMirror(this.editorOutput);
+	private mirrorPanelControlCopy(flow: "copy" | "move", panel: "1" | "2") {
+		const handlerPanel = panel === "1";
+		const view = handlerPanel ? this.editorInput : this.editorOutput;
+		const value = this.getTextToCodeMirror(view);
+
 		if (value.trim() === "") return;
 
 		if (flow === "copy") {
 			copyClipboard(value);
-		} else {
-			this.writeInEditor(this.editorInput, value);
+			return;
 		}
+
+		const mirror = handlerPanel ? this.editorOutput : this.editorInput;
+		this.writeInEditor(mirror, value);
 	}
 
-	private validEventChangeTextCodeMirror(content: string) {
-		const buttonsJson = document.querySelectorAll(".to-json");
-
+	private validEventCodeMirror(content: string, json: WritableSignal<boolean>) {
 		try {
 			JSON.parse(content);
-
-			if (this.jsonValid()) return; // Not reprocess same flow
-
-			this.jsonValid.set(true);
-			toggleButtonsStylesOptions(buttonsJson, true);
-		} catch (error) {
-			if (!this.jsonValid()) return; // Not reprocess same flow
-
-			this.jsonValid.set(false);
-			toggleButtonsStylesOptions(buttonsJson, false);
+			if (json()) return;
+			json.set(true);
+		} catch (_) {
+			if (!json()) return;
+			json.set(false);
 		}
 	}
 
@@ -140,49 +133,81 @@ export class AppComponent implements AfterViewInit {
 
 		if (!input || !output) return;
 
-		const updateListener = EditorView.updateListener.of((update) => {
+		const updateInput = EditorView.updateListener.of((update) => {
 			if (!update.docChanged) return;
 			const content = update.state.doc.toString();
-			this.validEventChangeTextCodeMirror(content);
+			localStorage.setItem(this.nameStorageOne, content);
+			this.validEventCodeMirror(content, this.jsonValidOne);
+		});
+
+		const updateOutput = EditorView.updateListener.of((update) => {
+			if (!update.docChanged) return;
+			const content = update.state.doc.toString();
+			localStorage.setItem(this.nameStorageTwo, content);
+			this.validEventCodeMirror(content, this.jsonValidTwo);
 		});
 
 		this.editorInput = new EditorView({
-			state: this.loadConfigEditor([updateListener]),
+			state: this.loadConfigEditor([updateInput]),
 			parent: input,
 		});
 
 		this.editorOutput = new EditorView({
-			state: this.loadConfigEditor([]),
+			state: this.loadConfigEditor([updateOutput]),
 			parent: output,
 		});
 	}
 
+	private loadTextInLocalStorage() {
+		const partialsOne = localStorage.getItem(this.nameStorageOne);
+		const partialsTwo = localStorage.getItem(this.nameStorageTwo);
+
+		if (partialsOne && partialsOne.trim() !== "") {
+			this.writeInEditor(this.editorInput, partialsOne);
+		}
+
+		if (partialsTwo && partialsTwo.trim() !== "") {
+			this.writeInEditor(this.editorOutput, partialsTwo);
+		}
+	}
+
 	ngAfterViewInit(): void {
-		if (!isPlatformBrowser(this.platformId)) return;
+		if (typeof window === "undefined" || typeof document === "undefined") {
+			return;
+		}
+
 		this.loadEditorsInView();
+		this.loadTextInLocalStorage();
+		assignEventDragSelect({
+			resize: this.isResizing,
+		});
 	}
 
-	onClickMoveText() {
-		this.handlerButtonsRightPanel("move");
+	onClickMoveText(panel: "1" | "2") {
+		this.mirrorPanelControlCopy("move", panel);
 	}
 
-	onClickCopyClipboard() {
-		this.handlerButtonsRightPanel("copy");
+	onClickCopyClipboard(panel: "1" | "2") {
+		this.mirrorPanelControlCopy("copy", panel);
 	}
 
-	onClickEncode() {
-		this.handlerParser("encode");
+	onClickEncode(panel: "1" | "2") {
+		const config = this.getConfigByPanel(panel);
+		this.mirrorPanelControlBase64("encode", config.view);
 	}
 
-	onClickDecode() {
-		this.handlerParser("decode");
+	onClickDecode(panel: "1" | "2") {
+		const config = this.getConfigByPanel(panel);
+		this.mirrorPanelControlBase64("decode", config.view);
 	}
 
-	onClickBeautify() {
-		this.handlerJsonMethods("clean");
+	onClickBeautify(panel: "1" | "2") {
+		const config = this.getConfigByPanel(panel);
+		this.mirrorPanelControlJson("clean", config.json, config.view);
 	}
 
-	onClickMinify() {
-		this.handlerJsonMethods("minify");
+	onClickMinify(panel: "1" | "2") {
+		const config = this.getConfigByPanel(panel);
+		this.mirrorPanelControlJson("minify", config.json, config.view);
 	}
 }

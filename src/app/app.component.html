@@ -1,70 +1,128 @@
-<main class="bg-emerald-800 p-4 h-auto lg:h-screen">
-  <h1 class="text-2xl text-center text-yellow-100">
+<main class="bg-gray-900 min-h-dvh flex flex-col">
+  <h1 class="mt-8 md:mt-0 text-2xl p-1 text-center text-white">
     JSON parser and Base64 handler
   </h1>
 
-  <div class="h-[90%] mt-6 flex flex-col pb-4 lg:flex-row">
-    <article
-      id="{{ tai }}"
-      class="w-[100%] lg:w-[40%] flex-1 min-h-[300px] overflow-auto border-2 border-gray-400"
-    ></article>
+  <a
+    class="fixed top-2 right-2 group"
+    href="https://github.com/JavierMolines/jsonb64"
+  >
+    <app-icon customClass="group-hover:stroke-emerald-400" iconName="github" />
+  </a>
 
-    <div class="w-[100%] lg:w-[20%] p-5 flex flex-col gap-4 self-center">
-      <p class="text-lg text-center text-yellow-100">
-        Handler Text (right panel)
-      </p>
+  <!-- PANEL ONE -->
+  <section id="container" class="flex-1 flex flex-col md:flex-row">
+    <div id="panelone" class="md:w-[47%] flex-0 max-h-[calc(100dvh-90px)]">
+      <nav class="gap-4 flex p-2">
+        <button (click)="onClickMinify('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="compress"
+          />
+        </button>
+        <button (click)="onClickBeautify('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="format"
+          />
+        </button>
+        <button (click)="onClickCopyClipboard('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="copy"
+          />
+        </button>
+        <button (click)="onClickEncode('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-encode"
+          />
+        </button>
+        <button (click)="onClickDecode('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-decode"
+          />
+        </button>
+        <button (click)="onClickMoveText('1')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="arrow-right"
+          />
+        </button>
+      </nav>
 
-      <button
-        (click)="onClickCopyClipboard()"
-        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
+      <article
+        id="{{ tai }}"
+        class="h-[37dvh] md:h-full relative flex-0 overflow-auto border-2 border-amber-100 bg-[#272822]"
       >
-        Copy Clipboard
-      </button>
-
-      <button
-        (click)="onClickMoveText()"
-        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
-      >
-        Move Left
-      </button>
-      <p class="text-lg text-center text-yellow-100">Base64</p>
-
-      <button
-        (click)="onClickDecode()"
-        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
-      >
-        Decode
-      </button>
-      <button
-        (click)="onClickEncode()"
-        class="p-2 cursor-pointer bg-purple-300 hover:bg-purple-200 rounded-lg"
-      >
-        Encode
-      </button>
-
-      <p class="text-lg text-center text-yellow-100">
-        Json Valid {{ jsonValid() ? "&#9989;" : "&#9940;" }}
-      </p>
-
-      <button
-        id="{{ buttonsJson.beu }}"
-        (click)="onClickBeautify()"
-        class="to-json p-2 cursor-not-allowed bg-gray-300 rounded-lg"
-      >
-        Beautify
-      </button>
-      <button
-        id="{{ buttonsJson.min }}"
-        (click)="onClickMinify()"
-        class="to-json p-2 cursor-not-allowed bg-gray-300 rounded-lg"
-      >
-        Minify
-      </button>
+        <div
+          class="z-10 text-left bg-[#69646465] w-full p-0 m-0 px-4 absolute bottom-0 left-0 text-white"
+        >
+          JSON Valid {{ jsonValidOne() ? "&#9989;" : "&#9940;" }}
+        </div>
+      </article>
     </div>
 
-    <article
-      id="{{ tao }}"
-      class="w-[100%] lg:w-[40%] flex-1 min-h-[300px] overflow-auto border-2 border-gray-400"
-    ></article>
-  </div>
+    <!-- DRAG AND DROP -->
+    <div
+      id="resizer"
+      class="hidden w-[6%] select-none h-[300px] cursor-ew-resize p-5 md:flex items-center justify-center self-center bg-gray-800 hover:bg-gray-700 focus:bg-gray-700"
+    >
+      <app-icon customClass="group-hover:stroke-emerald-400" iconName="drag" />
+    </div>
+
+    <!-- PANEL TWO -->
+    <div id="paneltwo" class="md:w-[47%] flex-0 max-h-[calc(100dvh-90px)]">
+      <nav class="gap-4 flex p-2 flex-row-reverse justify-start">
+        <button (click)="onClickMinify('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="compress"
+          />
+        </button>
+        <button (click)="onClickBeautify('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="format"
+          />
+        </button>
+        <button (click)="onClickCopyClipboard('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="copy"
+          />
+        </button>
+        <button (click)="onClickEncode('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-encode"
+          />
+        </button>
+        <button (click)="onClickDecode('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="base64-decode"
+          />
+        </button>
+        <button (click)="onClickMoveText('2')" class="group">
+          <app-icon
+            customClass="group-hover:stroke-emerald-400"
+            iconName="arrow-left"
+          />
+        </button>
+      </nav>
+
+      <article
+        id="{{ tao }}"
+        class="h-[37dvh] md:h-full relative flex-0 overflow-auto border-2 border-amber-100 bg-[#272822]"
+      >
+        <div
+          class="z-10 text-right bg-[#69646465] w-full p-0 m-0 px-4 absolute bottom-0 left-0 text-white"
+        >
+          JSON Valid {{ jsonValidTwo() ? "&#9989;" : "&#9940;" }}
+        </div>
+      </article>
+    </div>
+  </section>
 </main>
